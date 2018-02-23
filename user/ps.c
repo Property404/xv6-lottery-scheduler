@@ -10,6 +10,7 @@ int ps(){
 		return 0;
 		fprintf(1, "\n\t FAILURE\n");
 	}
+	fprintf(1,"Total tickets: %d\n\n", target.total_tickets);
 	fprintf(1, "PID\tTicks\tIn_Use\tTickets\tState\n");
 	int skipped = 0;
 	for(int i=0;i<NPROC;i++){

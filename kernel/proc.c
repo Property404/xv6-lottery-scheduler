@@ -4,6 +4,7 @@
 #include "mmu.h"
 #include "x86.h"
 #include "proc.h"
+#include "random.h"
 
 struct ptable_type ptable = {0};
 
@@ -154,7 +155,7 @@ fork(void)
 
 	// Tickets
 	// A child will have the same number of tickets as its parent
-	np->tickets = proc->tickets;
+	setproctickets(np, proc->tickets);
 
 	// Clear %eax so that fork returns 0 in the child.
 	np->tf->eax = 0;
@@ -275,18 +276,38 @@ scheduler(void)
 
 	// Set init's tickets to 1
 	acquire(&ptable.lock);
-	ptable.proc->tickets = 1;
+	setproctickets(ptable.proc, 1);
 	release(&ptable.lock);
+
+	// Seed random
+	static _Bool have_seeded = 0;
+	const int seed = 1323;
+	if(!have_seeded)
+	{
+		srand(seed);
+		have_seeded = 1;
+	}
 
 	for(;;){
 		// Enable interrupts on this processor.
 		sti();
 
+		// Winning ticket
+		const int golden_ticket = rand()%total_tickets;
+		int ticket_count = 0;
+
 		// Loop over process table looking for process to run.
 		acquire(&ptable.lock);
 		for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+			ticket_count += p->tickets;
+
 			if(p->state != RUNNABLE)
 				continue;
+			if(ticket_count < golden_ticket)
+				continue;
+			else if(ticket_count> total_tickets)
+				cprintf("Extra: %d | %d | %d\n", ticket_count, total_tickets, golden_ticket);
+
 
 			// Switch to chosen process.  It is the process's job
 			// to release ptable.lock and then reacquire it
@@ -308,6 +329,7 @@ scheduler(void)
 			// Process is done running for now.
 			// It should have changed its p->state before coming back.
 			proc = 0;
+			break;
 		}
 		release(&ptable.lock);
 

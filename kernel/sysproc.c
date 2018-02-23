@@ -6,10 +6,17 @@
 #include "proc.h"
 #include "pstat.h"
 #include "sysfunc.h"
+extern const int total_tickets;
 
 int sys_settickets(void)
 {
-	return 42;
+	int number_of_tickets;
+	if(argint(0, &number_of_tickets) < 0)
+		return -1;
+	acquire(&ptable.lock);
+	setproctickets(proc, number_of_tickets);
+	release(&ptable.lock);
+	return number_of_tickets;
 }
 
 int sys_getpinfo(void)
@@ -31,6 +38,7 @@ int sys_getpinfo(void)
 			target->state[index] = p->state;
 		}
 	}
+	target->total_tickets = total_tickets;
 	release(&ptable.lock);
 	return 0;
 

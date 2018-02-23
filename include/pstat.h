@@ -32,6 +32,8 @@ struct pstat {
 	//state
 	enum procstate state[NPROC];
 
+	int total_tickets;
+
 };
 
 #endif
