@@ -4,6 +4,13 @@
 #include "user.h"
 #include "x86.h"
 
+char
+getchar()
+{
+	char c;
+    int cc = read(stdin, &c, 1);
+	return cc==-1?-1:c;
+}
 char*
 strcpy(char *s, char *t)
 {
@@ -24,7 +31,7 @@ strcmp(const char *p, const char *q)
 }
 
 uint
-strlen(char *s)
+strlen(const char *s)
 {
   int n;
 
@@ -103,3 +110,8 @@ memmove(void *vdst, void *vsrc, int n)
     *dst++ = *src++;
   return vdst;
 }
+
+// Constants
+const int stdin = 0;
+const int stdout = 1;
+const int stderr = 2;

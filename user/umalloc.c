@@ -61,6 +61,16 @@ morecore(uint nu)
 }
 
 void*
+calloc(uint nmemb, uint size){
+	const uint s = nmemb*size;
+	void* p = malloc(s);
+	for(int i=0;i<s;i++){
+		((char*)p)[i] = 0;
+	}
+	return p;
+}
+
+void*
 malloc(uint nbytes)
 {
   Header *p, *prevp;

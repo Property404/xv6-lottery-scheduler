@@ -17,18 +17,18 @@ main(int argc, char *argv[])
   int fd, i;
   char path[] = "stressfs0";
 
-  printf(1, "stressfs starting\n");
+  fprintf(1, "stressfs starting\n");
 
   for(i = 0; i < 4; i++)
     if(fork() > 0)
       break;
 
-  printf(1, "%d\n", i);
+  fprintf(1, "%d\n", i);
 
   path[8] += i;
   fd = open(path, O_CREATE | O_RDWR);
   for(i = 0; i < 100; i++)
-    printf(fd, "%d\n", i);
+    fprintf(fd, "%d\n", i);
   close(fd);
 
   wait();
