@@ -27,6 +27,8 @@ CFLAGS += -Wall -Wno-deprecated-declarations
 CFLAGS += -Werror
 # produce debugging information for use by gdb
 CFLAGS += -ggdb
+# Use a modern version of C
+CFLAGS += -std=gnu99
 
 # uncomment to enable optimizations. improves performance, but may make
 # debugging more difficult
