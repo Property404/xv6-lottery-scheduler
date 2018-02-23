@@ -3,6 +3,8 @@
 
 #include "param.h"
 
+enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
+
 // Copied directly form the assignment sheet
 // Everything in this structure is DESCRIPTIVE
 // but NOT PRESCRIPTIVE
@@ -26,6 +28,10 @@ struct pstat {
 
 	// Number of tickets
 	int tickets[NPROC];
+
+	//state
+	enum procstate state[NPROC];
+
 };
 
 #endif

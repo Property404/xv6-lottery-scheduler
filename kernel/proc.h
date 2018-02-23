@@ -10,6 +10,10 @@
 #define SEG_TSS   6  // this process's task state
 #define NSEGS     7
 
+#include "pstat.h"
+#include "spinlock.h"
+
+
 // Per-CPU state
 struct cpu {
 	uchar id;                    // Local APIC ID; index into cpus[] below
@@ -57,7 +61,6 @@ struct context {
 	uint eip;
 };
 
-enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 // Per-process state
 struct proc {
@@ -90,5 +93,12 @@ struct proc {
 //   original data and bss
 //   fixed-size stack
 //   expandable heap
+
+// Let's allow the process table to be public
+struct ptable_type {
+	struct spinlock lock;
+	struct proc proc[NPROC];
+};
+extern struct ptable_type ptable;
 
 #endif // _PROC_H_

@@ -3,6 +3,7 @@
 USER_PROGS := \
 	cat\
 	bf\
+	bm\
 	echo\
 	forktest\
 	grep\
@@ -11,6 +12,7 @@ USER_PROGS := \
 	ln\
 	ls\
 	mkdir\
+	ps\
 	rm\
 	sh\
 	stressfs\
