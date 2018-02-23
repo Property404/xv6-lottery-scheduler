@@ -6,7 +6,6 @@
 int ps(){
 	fprintf(1,"This process: %d\n", getpid());
 	struct pstat target = {0};
-	fprintf(1, "Target loc: %p\n", &target);
 	if(-1 == getpinfo(&target)){
 		return 0;
 		fprintf(1, "\n\t FAILURE\n");

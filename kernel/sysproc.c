@@ -16,11 +16,9 @@ int sys_getpinfo(void)
 {
 	acquire(&ptable.lock);
 	struct pstat* target;
-	cprintf("target=%p\n", target);
 	if(argint(0, (int*)(&target)) < 0)
 		return -1;
 
-	cprintf("target=%p\n", target);
 	for(struct proc* p=ptable.proc;p != &(ptable.proc[NPROC]); p++)
 	{
 		const int index = p - ptable.proc;
