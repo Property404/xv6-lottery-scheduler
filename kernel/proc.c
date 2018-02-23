@@ -21,6 +21,17 @@ pinit(void)
 	initlock(&ptable.lock, "ptable");
 }
 
+// Keep track of the amount of tickets handed out
+int total_tickets;
+// This function should always  be in a lock
+void setproctickets(struct proc* pp, int n)
+{
+	total_tickets -= pp->tickets;
+	pp->tickets = n;
+	total_tickets += pp->tickets;
+}
+
+
 // Look in the process table for an UNUSED proc.
 // If found, change state to EMBRYO and initialize
 // state required to run in the kernel.
@@ -141,6 +152,10 @@ fork(void)
 	np->parent = proc;
 	*np->tf = *proc->tf;
 
+	// Tickets
+	// A child will have the same number of tickets as its parent
+	np->tickets = proc->tickets;
+
 	// Clear %eax so that fork returns 0 in the child.
 	np->tf->eax = 0;
 
@@ -192,6 +207,9 @@ exit(void)
 		}
 	}
 
+	// Remove from lottery
+	setproctickets(proc, 0);
+
 	// Jump into the scheduler, never to return.
 	proc->state = ZOMBIE;
 	sched();
@@ -225,8 +243,8 @@ wait(void)
 				p->parent = 0;
 				p->name[0] = 0;
 				p->killed = 0;
-				proc->tickets = 0;
-				proc->ticks = 0;
+				p->ticks = 0;
+				setproctickets(p, 0);
 				release(&ptable.lock);
 				return pid;
 			}
@@ -254,6 +272,11 @@ wait(void)
 scheduler(void)
 {
 	struct proc *p;
+
+	// Set init's tickets to 1
+	acquire(&ptable.lock);
+	ptable.proc->tickets = 1;
+	release(&ptable.lock);
 
 	for(;;){
 		// Enable interrupts on this processor.
