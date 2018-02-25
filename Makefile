@@ -22,7 +22,9 @@ all: xv6.img fs.img
 # http://gcc.gnu.org/onlinedocs/gcc-4.4.6/gcc/Invoking-GCC.html
 CC = gcc
 # enable extra warnings
-CFLAGS += -Wall -Wno-deprecated-declarations
+CFLAGS += -Wall -Wextra
+# Disable some warnings
+CFLAGS += -Wno-deprecated-declarations -Wno-sign-compare -Wno-unused-parameter -Wno-implicit-fallthrough
 # treat warnings as errors
 CFLAGS += -Werror
 # produce debugging information for use by gdb
@@ -82,7 +84,7 @@ QEMUGDB := $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 
 # number of CPUs to emulate in QEMU
 ifndef CPUS
-CPUS := 2
+CPUS := 1
 endif
 
 QEMUOPTS := -hdb fs.img xv6.img -smp $(CPUS)

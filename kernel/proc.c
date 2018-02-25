@@ -5,6 +5,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "random.h"
+#define STORE_TICKETS_ON_SLEEP
 
 struct ptable_type ptable = {0};
 
@@ -30,6 +31,26 @@ void setproctickets(struct proc* pp, int n)
 	total_tickets -= pp->tickets;
 	pp->tickets = n;
 	total_tickets += pp->tickets;
+}
+
+// Just after sleeping
+void storetickets(struct proc* pp)
+{
+	if(pp->state != SLEEPING)
+		panic("Not sleeping at storetickets");
+#ifdef STORE_TICKETS_ON_SLEEP
+	total_tickets -= pp->tickets;
+#endif
+}
+
+// Just before waking
+void restoretickets(struct proc* pp)
+{
+	if(pp->state != SLEEPING)
+		panic("Not sleeping at waketickets");
+#ifdef STORE_TICKETS_ON_SLEEP
+	total_tickets += pp->tickets;
+#endif
 }
 
 
@@ -293,18 +314,29 @@ scheduler(void)
 		sti();
 
 		// Winning ticket
-		const int golden_ticket = rand()%total_tickets;
+		const int golden_ticket =
+			rand()%(total_tickets + 1);
 		int ticket_count = 0;
 
 		// Loop over process table looking for process to run.
 		acquire(&ptable.lock);
 		for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-			ticket_count += p->tickets;
 
+			// We're only looking for runnable processes
 			if(p->state != RUNNABLE)
+			{
+#ifndef STORE_TICKETS_ON_SLEEP
+				ticket_count += p->tickets;
+#endif
 				continue;
+			}
+
+			// Ones that have the golden ticket
+			ticket_count += p->tickets;
 			if(ticket_count < golden_ticket)
+			{
 				continue;
+			}
 			else if(ticket_count> total_tickets)
 				cprintf("Extra: %d | %d | %d\n", ticket_count, total_tickets, golden_ticket);
 
@@ -361,6 +393,10 @@ sched(void)
 yield(void)
 {
 	acquire(&ptable.lock);  //DOC: yieldlock
+	if(proc->state == SLEEPING)
+	{
+		panic("Sleep happens here, apparently. We need to restore tickets.");
+	}
 	proc->state = RUNNABLE;
 	sched();
 	release(&ptable.lock);
@@ -402,6 +438,7 @@ sleep(void *chan, struct spinlock *lk)
 	// Go to sleep.
 	proc->chan = chan;
 	proc->state = SLEEPING;
+	storetickets(proc);
 	sched();
 
 	// Tidy up.
@@ -423,7 +460,10 @@ wakeup1(void *chan)
 
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
 		if(p->state == SLEEPING && p->chan == chan)
+		{
+			restoretickets(p);
 			p->state = RUNNABLE;
+		}
 }
 
 // Wake up all processes sleeping on chan.
@@ -449,7 +489,10 @@ kill(int pid)
 			p->killed = 1;
 			// Wake process from sleep if necessary.
 			if(p->state == SLEEPING)
+			{
+				restoretickets(p);
 				p->state = RUNNABLE;
+			}
 			release(&ptable.lock);
 			return 0;
 		}
@@ -464,6 +507,7 @@ kill(int pid)
 	void
 procdump(void)
 {
+	cprintf("Total Tickets: %d\n\n", total_tickets);
 	static char *states[] = {
 		[UNUSED]    "unused",
 		[EMBRYO]    "embryo",

@@ -34,8 +34,11 @@ static void printint(int fd, int xx, int base, int sgn)
 		buf[i++] = '-';
 
 	while(--i >= 0)
+	{
 		putc(fd, buf[i]);
+	}
 }
+
 
 // Print to the given fd. Only understands %d, %x, %p, %s.
 void fprintf(int fd, const char *fmt, ...)
