@@ -7,6 +7,7 @@ USER_PROGS := \
 	echo\
 	forktest\
 	grep\
+	grapher\
 	init\
 	kill\
 	ln\
