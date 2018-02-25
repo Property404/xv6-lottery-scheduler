@@ -21,7 +21,8 @@ int main(int argc, char** argv)
 		if(!pid)
 		{
 			const int t = atoi(argv[i]);//number of tickets
-			fprintf(stdout, "Child %d created with %d tickets\n", getpid(), settickets(t));
+			settickets(t);
+			fprintf(stdout, "Child %d created with %d tickets\n", getpid(), t);
 			// Loop forever
 			while(1);
 			fprintf(stdout, "Child %d exiting\n", getpid());

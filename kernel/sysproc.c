@@ -11,12 +11,15 @@ extern const int total_tickets;
 int sys_settickets(void)
 {
 	int number_of_tickets;
+	// Error
 	if(argint(0, &number_of_tickets) < 0)
 		return -1;
+
 	acquire(&ptable.lock);
 	setproctickets(proc, number_of_tickets);
 	release(&ptable.lock);
-	return number_of_tickets;
+
+	return 0;
 }
 
 int sys_getpinfo(void)
