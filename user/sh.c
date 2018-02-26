@@ -141,8 +141,7 @@ getcmd(char *buf, int nbuf)
 	return 0;
 }
 
-	int
-main(void)
+int main(void)
 {
 	settickets(100);
 	static char buf[100];
@@ -165,6 +164,14 @@ main(void)
 			if(chdir(buf+3) < 0)
 				fprintf(2, "cannot cd %s\n", buf+3);
 			continue;
+		}else if(buf[0] == 'e'
+				&& buf[1] == 'x'
+				&& buf[2] == 'i'
+				&& buf[3] == 't'
+				&& (buf[4] == ' ' ||
+					buf[4] == '\n')
+				){
+			exit();
 		}
 		if(fork1() == 0)
 			runcmd(parsecmd(buf));
@@ -173,15 +180,13 @@ main(void)
 	exit();
 }
 
-	void
-panic(char *s)
+void panic(char *s)
 {
 	fprintf(2, "%s\n", s);
 	exit();
 }
 
-	int
-fork1(void)
+int fork1(void)
 {
 	int pid;
 
@@ -193,8 +198,7 @@ fork1(void)
 
 // Constructors
 
-	struct cmd*
-execcmd(void)
+struct cmd* execcmd(void)
 {
 	struct execcmd *cmd;
 
@@ -204,8 +208,7 @@ execcmd(void)
 	return (struct cmd*)cmd;
 }
 
-	struct cmd*
-redircmd(struct cmd *subcmd, char *file, char *efile, int mode, int fd)
+struct cmd* redircmd(struct cmd *subcmd, char *file, char *efile, int mode, int fd)
 {
 	struct redircmd *cmd;
 
@@ -220,8 +223,7 @@ redircmd(struct cmd *subcmd, char *file, char *efile, int mode, int fd)
 	return (struct cmd*)cmd;
 }
 
-	struct cmd*
-pipecmd(struct cmd *left, struct cmd *right)
+struct cmd* pipecmd(struct cmd *left, struct cmd *right)
 {
 	struct pipecmd *cmd;
 
@@ -246,8 +248,7 @@ listcmd(struct cmd *left, struct cmd *right)
 	return (struct cmd*)cmd;
 }
 
-	struct cmd*
-backcmd(struct cmd *subcmd)
+struct cmd* backcmd(struct cmd *subcmd)
 {
 	struct backcmd *cmd;
 
@@ -259,11 +260,10 @@ backcmd(struct cmd *subcmd)
 }
 // Parsing
 
-char whitespace[] = " \t\r\n\v";
-char symbols[] = "<|>&;()";
+const char whitespace[] = " \t\r\n\v";
+const char symbols[] = "<|>&;()";
 
-	int
-gettoken(char **ps, char *es, char **q, char **eq)
+int gettoken(char **ps, char *es, char **q, char **eq)
 {
 	char *s;
 	int ret;
