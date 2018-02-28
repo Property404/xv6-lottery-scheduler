@@ -50,6 +50,7 @@ int ps(){
 			100*
 			(float)pinfo.ticks[i]/
 			(float)total_ticks;
+
 		if(pinfo.state[i] == 2 || pinfo.pid[i] == current_pid)
 		{
 			skip_yield = 1;
@@ -64,11 +65,13 @@ int ps(){
 			(int)((actual_yield-ay_left)*10);
 
 
-
+		// Indicate which process is in use
 		if(pinfo.inuse[i])
 			putchar('>');
 		else
 			putchar('|');
+
+		// Write the row
 		fprintf(stdout, 
 				skip_yield?
 				"%d\t%d\t%d\t%d\t-\t-\n":

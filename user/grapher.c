@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 	// List of indexes in the pstat struct
 	// that give us the processes we want
 	int pindices[PROCESS_QUANTITY];
-	for(int index;index<NPROC;index++)
+	for(int index=0;index<NPROC;index++)
 	{
 		for(int i=0;i<PROCESS_QUANTITY;i++)
 		{

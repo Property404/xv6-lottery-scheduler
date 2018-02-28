@@ -85,8 +85,6 @@ struct proc {
 	// Lottery shit
 	int tickets;
 
-
-
 };
 
 // Process memory is laid out contiguously, low addresses first:

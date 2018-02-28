@@ -32,6 +32,6 @@ main(void)
       exit();
     }
     while((wpid=wait()) >= 0 && wpid != pid)
-      fprintf(1, "zombie!\n");
+      fprintf(1, "Zombie!!\n");
   }
 }

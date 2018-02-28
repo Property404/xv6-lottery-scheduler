@@ -34,7 +34,7 @@ CFLAGS += -std=gnu99
 
 # uncomment to enable optimizations. improves performance, but may make
 # debugging more difficult
-# CFLAGS += -O1
+# CFLAGS += -Og
 
 # C Preprocessor
 CPP := cpp
